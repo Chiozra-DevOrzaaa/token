@@ -2,18 +2,20 @@
   "credentials": [
     {
       "token": "8187428272:AAGWLjh06SVBFl0aPXy9R9SjAPtMz4qBP4E",
-      "expiry": "06-2025",
-      "password": "123"
+      
+      "expiry": "06-2025"
     },
     {
-      "token": "token67890",
-      "expiry": "08-2025",
-      "password": "password2"
+      "token": "T0K3N-CIA-002",
+      "password": "aksesultra",
+      "expiry": "07-2025"
     },
     {
-      "token": "token54321",
-      "expiry": "07-2025",
-      "password": "password3"
+      "token": "T0K3N-CIA-003",
+      "expiry": "12-2025"
+      },
+      {
+      "password": "annas",
     }
   ]
 }
