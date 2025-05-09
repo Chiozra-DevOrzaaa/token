@@ -2,7 +2,6 @@
   "credentials": [
     {
       "token": "8187428272:AAGWLjh06SVBFl0aPXy9R9SjAPtMz4qBP4E",
-      
       "expiry": "06-2025"
     },
     {
@@ -13,9 +12,9 @@
     {
       "token": "T0K3N-CIA-003",
       "expiry": "12-2025"
-      },
-      {
-      "password": "annas",
+    },
+    {
+      "password": "annas"
     }
   ]
 }
