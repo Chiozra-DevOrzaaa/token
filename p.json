@@ -1,20 +1,54 @@
 {
   "credentials": [
     {
+      "password": "buyer",
       "token": "8187428272:AAGWLjh06SVBFl0aPXy9R9SjAPtMz4qBP4E",
       "expiry": "06-2025"
     },
     {
-      "token": "T0K3N-CIA-002",
-      "password": "aksesultra",
-      "expiry": "07-2025"
+      "password": "annas002",
+      "token": "CIA-TOKEN-002",
+      "expiry": "06-2025"
     },
     {
-      "token": "T0K3N-CIA-003",
-      "expiry": "12-2025"
+      "password": "annas003",
+      "token": "CIA-TOKEN-003",
+      "expiry": "06-2025"
     },
     {
-      "password": "annas"
+      "password": "annas004",
+      "token": "CIA-TOKEN-004",
+      "expiry": "06-2025"
+    },
+    {
+      "password": "annas005",
+      "token": "CIA-TOKEN-005",
+      "expiry": "06-2025"
+    },
+    {
+      "password": "annas006",
+      "token": "CIA-TOKEN-006",
+      "expiry": "06-2025"
+    },
+    {
+      "password": "annas007",
+      "token": "CIA-TOKEN-007",
+      "expiry": "06-2025"
+    },
+    {
+      "password": "annas008",
+      "token": "CIA-TOKEN-008",
+      "expiry": "06-2025"
+    },
+    {
+      "password": "annas009",
+      "token": "CIA-TOKEN-009",
+      "expiry": "06-2025"
+    },
+    {
+      "password": "annas010",
+      "token": "CIA-TOKEN-010",
+      "expiry": "06-2025"
     }
   ]
 }
