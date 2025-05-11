@@ -1,54 +1,20 @@
 {
-  "credentials": [
-    {
-      "password": "buyer",
-      "token": "8187428272:AAGWLjh06SVBFl0aPXy9R9SjAPtMz4qBP4E",
-      "expiry": "06-2025"
-    },
-    {
-      "password": "annas002",
-      "token": "CIA-TOKEN-002",
-      "expiry": "06-2025"
-    },
-    {
-      "password": "annas003",
-      "token": "CIA-TOKEN-003",
-      "expiry": "06-2025"
-    },
-    {
-      "password": "annas004",
-      "token": "CIA-TOKEN-004",
-      "expiry": "06-2025"
-    },
-    {
-      "password": "annas005",
-      "token": "CIA-TOKEN-005",
-      "expiry": "06-2025"
-    },
-    {
-      "password": "annas006",
-      "token": "CIA-TOKEN-006",
-      "expiry": "06-2025"
-    },
-    {
-      "password": "annas007",
-      "token": "CIA-TOKEN-007",
-      "expiry": "06-2025"
-    },
-    {
-      "password": "annas008",
-      "token": "CIA-TOKEN-008",
-      "expiry": "06-2025"
-    },
-    {
-      "password": "annas009",
-      "token": "CIA-TOKEN-009",
-      "expiry": "06-2025"
-    },
-    {
-      "password": "annas010",
-      "token": "CIA-TOKEN-010",
-      "expiry": "06-2025"
-    }
+  "tokens": [
+    "8187428272:AAGWLjh06SVBFl0aPXy9R9SjAPtMz4qBP4E",
+    "token1_example_ABC123",
+    "token2_example_DEF456",
+    "token3_example_GHI789",
+    "token4_example_JKL012",
+    "token5_example_MNO345",
+    "token6_example_PQR678",
+    "token7_example_STU901",
+    "token8_example_VWX234",
+    "token9_example_YZA567",
+    "token10_example_BCD890",
+    "token11_example_CDE123",
+    "token12_example_FGH456",
+    "token13_example_IJK789",
+    "token14_example_LMN012",
+    "token15_example_OPQ345"
   ]
 }
