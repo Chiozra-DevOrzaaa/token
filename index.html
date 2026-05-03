@@ -36,11 +36,11 @@ input[type="file"]{padding:8px;background:var(--bg)}
 .slider{position:relative;height:220px;overflow:hidden}
 .slider-wrap{display:flex;transition:.5s;height:100%}
 .slide{min-width:100%;height:100%}
-.slide img{width:100%;height:100%;object-fit:cover}
+.slide img,.slide video{width:100%;height:100%;object-fit:cover}
 .slider-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.6);color:#fff;border:none;padding:8px 12px;cursor:pointer;border-radius:50%;font-size:18px}
 .prev{left:10px}.next{right:10px}
 .dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
-.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,.5);cursor:pointer}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer}
 .dot.active{background:var(--p)}
 .produk-info{padding:18px}
 .nama-barang{font-size:17px;font-weight:700;margin-bottom:6px}
@@ -66,7 +66,7 @@ input[type="file"]{padding:8px;background:var(--bg)}
 .hide{display:none!important}
 .preview-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:10px}
 .preview-item{position:relative}
-.preview-img{width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.preview-img,.preview-video{width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
 .hapus-foto{position:absolute;top:-5px;right:-5px;background:#dc2626;color:#fff;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:12px;line-height:1}
 .upload-info{font-size:12px;opacity:.6;margin-top:5px}
 @media(max-width:768px){.tools{grid-template-columns:1fr}.produk-grid{grid-template-columns:1fr}.header{flex-direction:column;text-align:center}}
@@ -78,7 +78,6 @@ input[type="file"]{padding:8px;background:var(--bg)}
     <div class="logo-area">
       <div class="logo-slider">
         <div class="logo-wrap" id="logoSlider">
-          <!-- Logo di-render JS -->
         </div>
         <button class="logo-btn logo-prev" onclick="logoPrev()">‹</button>
         <button class="logo-btn logo-next" onclick="logoNext()">›</button>
@@ -87,7 +86,6 @@ input[type="file"]{padding:8px;background:var(--bg)}
         <div class="store-name">ZIHAN STORE</div>
         <div class="alamat">📍 Jl Sawangan Depok</div>
       </div>
-    </div>
     <div class="btn-group">
       <button class="btn btn-keranjang" onclick="bukaCart()">🛒 Keranjang <span class="cart-count" id="cartCount">0</span></button>
       <button class="btn btn-admin" onclick="bukaAdmin()" id="adminBtn">Admin Panel</button>
@@ -160,8 +158,8 @@ if(adminBlocked)document.getElementById('adminBtn').classList.add('hide');
 function renderLogo(){
   const wrap=document.getElementById('logoSlider');
   wrap.innerHTML=logo.map(url=>{
-    if(url.match(/\.(mp4|webm|mov)$/i)){
-      return `<div class="logo-slide"><video src="${url}" autoplay muted loop></video></div>`;
+    if(url.match(/\.(mp4|webm|mov)$/i)||url.includes('video')){
+      return `<div class="logo-slide"><video src="${url}" autoplay muted loop playsinline></video></div>`;
     }else{
       return `<div class="logo-slide"><img src="${url}"></div>`;
     }
@@ -182,6 +180,11 @@ function logoPrev(){
 function updateLogo(){
   document.getElementById('logoSlider').style.transform=`translateX(-${currentLogo*100}%)`;
 }
+
+function isVideo(src){
+  return src.match(/\.(mp4|webm|mov)$/i)||src.startsWith('data:video');
+}
+
 function renderProduk(arr=produk){
   const grid=document.getElementById('produkGrid');
   grid.innerHTML=arr.map(p=>{
@@ -190,7 +193,7 @@ function renderProduk(arr=produk){
     <div class="produk-card">
       <div class="slider">
         <div class="slider-wrap" id="slider-${p.id}">
-          ${p.foto.map((f,i)=>`<div class="slide"><img src="${f}" loading="lazy"></div>`).join('')}
+          ${p.foto.map((f,i)=>`<div class="slide">${isVideo(f)?`<video src="${f}" muted loop playsinline></video>`:`<img src="${f}" loading="lazy">`}</div>`).join('')}
         </div>
         ${p.foto.length>1?`
         <button class="slider-btn prev" onclick="slidePrev(${p.id})">‹</button>
@@ -232,6 +235,11 @@ function updateSlide(id){
   document.getElementById(`slider-${id}`).style.transform=`translateX(-${currentSlide[id]*100}%)`;
   const dots=document.querySelectorAll(`#slider-${id} ~.dots.dot`);
   dots.forEach((d,i)=>d.classList.toggle('active',i===currentSlide[id]));
+  const slides=document.querySelectorAll(`#slider-${id}.slide`);
+  slides.forEach((s,i)=>{
+    const vid=s.querySelector('video');
+    if(vid){i===currentSlide[id]?vid.play():vid.pause();}
+  });
 }
 
 function filterProduk(){
@@ -342,6 +350,7 @@ function cekAdmin(){
 }
 
 function showAdminPanel(){
+  tempFoto=[];
   const content=document.getElementById('modalContent');
   content.innerHTML=`
     <h3>⚙️ Admin Panel</h3>
@@ -350,14 +359,19 @@ function showAdminPanel(){
     <div class="form-group"><label>Harga:</label><input type="number" id="hargaBaru" placeholder="Ketik harga"></div>
     <div class="form-group"><label>Stok:</label><input type="number" id="stokBaru" placeholder="Ketik stok"></div>
     <div class="form-group"><label>Kategori:</label><input type="text" id="katBaru" placeholder="Ketik kategori sendiri"></div>
-    <div class="form-group"><label>URL Foto (pisah koma jika banyak):</label><textarea id="fotoBaru" rows="2" placeholder="https://foto1.jpg, https://foto2.jpg"></textarea></div>
+    <div class="form-group">
+      <label>Upload Foto/Video:</label>
+      <input type="file" id="fotoBaru" accept="image/*,video/*" multiple onchange="previewFoto(event)">
+      <div class="upload-info">Pilih foto atau video dari galeri HP. Max 10MB per file.</div>
+      <div class="preview-wrap" id="previewFoto"></div>
+    </div>
     <button class="btn" style="width:100%" onclick="tambahProduk()">+ Tambah Produk</button>
 
     <h4 style="margin:30px 0 15px">📦 List Produk</h4>
     <div style="max-height:300px;overflow-y:auto">
       ${produk.map(p=>`
         <div class="cart-item">
-          <div><b>${p.nama}</b><br><small>${p.model} - Rp ${p.harga.toLocaleString('id-ID')} | ${p.kat} | ${p.foto.length} foto</small></div>
+          <div><b>${p.nama}</b><br><small>${p.model} - Rp ${p.harga.toLocaleString('id-ID')} | ${p.kat} | ${p.foto.length} media</small></div>
           <div style="display:flex;gap:5px">
             <button class="btn" style="padding:6px 12px;background:#059669" onclick="editProduk(${p.id})">Edit</button>
             <button class="btn" style="padding:6px 12px;background:#dc2626" onclick="hapusProduk(${p.id})">Hapus</button>
@@ -369,17 +383,51 @@ function showAdminPanel(){
   `;
 }
 
+function previewFoto(e,isEdit=false){
+  const files=e.target.files;
+  if(!files.length) return;
+
+  if(!isEdit) tempFoto=[];
+  const wrap = document.getElementById(isEdit?'previewEditFoto':'previewFoto');
+  if(!isEdit) wrap.innerHTML='';
+
+  Array.from(files).forEach((file,i)=>{
+    if(file.size>10*1024*1024)return alert(`File ${file.name} kegedean! Max 10MB`);
+    const reader = new FileReader();
+    reader.onload = e => {
+      const base64 = e.target.result;
+      tempFoto.push(base64);
+      wrap.innerHTML += `
+        <div class="preview-item">
+          ${file.type.includes('video')?`<video src="${base64}" class="preview-video"></video>`:`<img src="${base64}" class="preview-img">`}
+          <button class="hapus-foto" onclick="hapusPreview(${tempFoto.length-1},${isEdit})">×</button>
+        </div>`;
+    }
+    reader.readAsDataURL(file);
+  });
+}
+
+function hapusPreview(index,isEdit){
+  tempFoto.splice(index,1);
+  const wrap = document.getElementById(isEdit?'previewEditFoto':'previewFoto');
+  wrap.innerHTML = tempFoto.map((f,i)=>`
+    <div class="preview-item">
+      ${isVideo(f)?`<video src="${f}" class="preview-video"></video>`:`<img src="${f}" class="preview-img">`}
+      <button class="hapus-foto" onclick="hapusPreview(${i},${isEdit})">×</button>
+    </div>`).join('');
+}
+
 function tambahProduk(){
   const nama=document.getElementById('namaBaru').value;
   const model=document.getElementById('modelBaru').value;
   const harga=parseInt(document.getElementById('hargaBaru').value)||0;
   const stok=parseInt(document.getElementById('stokBaru').value)||0;
   const kat=document.getElementById('katBaru').value;
-  const foto=document.getElementById('fotoBaru').value.split(',').map(f=>f.trim()).filter(f=>f);
 
   if(!nama||!model||!kat)return alert('Nama, Model & Kategori wajib diisi!');
+  if(!tempFoto.length)return alert('Upload minimal 1 foto/video!');
 
-  produk.push({id:Date.now(),nama,model,harga,kat,stok,foto:foto.length?foto:['https://via.placeholder.com/600x400?text=No+Image']});
+  produk.push({id:Date.now(),nama,model,harga,kat,stok,foto:[...tempFoto]});
   localStorage.setItem('zihan_produk',JSON.stringify(produk));
   renderProduk();
   showAdminPanel();
@@ -388,6 +436,7 @@ function tambahProduk(){
 
 function editProduk(id){
   const p=produk.find(x=>x.id==id);
+  tempFoto=[...p.foto];
   const content=document.getElementById('modalContent');
   content.innerHTML=`
     <h3>✏️ Edit Produk</h3>
@@ -396,7 +445,18 @@ function editProduk(id){
     <div class="form-group"><label>Harga:</label><input type="number" id="editHarga" value="${p.harga}"></div>
     <div class="form-group"><label>Stok:</label><input type="number" id="editStok" value="${p.stok}"></div>
     <div class="form-group"><label>Kategori:</label><input type="text" id="editKat" value="${p.kat}"></div>
-    <div class="form-group"><label>URL Foto (pisah koma untuk banyak):</label><textarea id="editFoto" rows="3">${p.foto.join(', ')}</textarea></div>
+    <div class="form-group">
+      <label>Upload Foto/Video:</label>
+      <input type="file" id="editFotoInput" accept="image/*,video/*" multiple onchange="previewFoto(event,true)">
+      <div class="upload-info">Tambah foto/video baru atau hapus yang lama. Max 10MB per file.</div>
+      <div class="preview-wrap" id="previewEditFoto">
+        ${p.foto.map((f,i)=>`
+          <div class="preview-item">
+            ${isVideo(f)?`<video src="${f}" class="preview-video"></video>`:`<img src="${f}" class="preview-img">`}
+            <button class="hapus-foto" onclick="hapusPreview(${i},true)">×</button>
+          </div>`).join('')}
+      </div>
+    </div>
     <button class="btn" style="width:100%;background:#059669" onclick="simpanEditProduk(${p.id})">💾 Simpan Perubahan</button>
     <button class="btn" style="width:100%;margin-top:10px;background:#475569" onclick="showAdminPanel()">← Kembali</button>
   `;
@@ -409,15 +469,15 @@ function simpanEditProduk(id){
   const harga=parseInt(document.getElementById('editHarga').value)||0;
   const stok=parseInt(document.getElementById('editStok').value)||0;
   const kat=document.getElementById('editKat').value;
-  const foto=document.getElementById('editFoto').value.split(',').map(f=>f.trim()).filter(f=>f);
 
   if(!nama||!model||!kat)return alert('Nama, Model & Kategori wajib diisi!');
+  if(!tempFoto.length)return alert('Minimal 1 foto/video!');
 
-  p.nama=nama;p.model=model;p.harga=harga;p.stok=stok;p.kat=kat;p.foto=foto.length?foto:['https://via.placeholder.com/600x400?text=No+Image'];
+  p.nama=nama;p.model=model;p.harga=harga;p.stok=stok;p.kat=kat;p.foto=[...tempFoto];
   localStorage.setItem('zihan_produk',JSON.stringify(produk));
   renderProduk();
   showAdminPanel();
-  alert('✅ Produk + Foto berhasil diupdate!');
+  alert('✅ Produk + Media berhasil diupdate!');
 }
 
 function hapusProduk(id){
